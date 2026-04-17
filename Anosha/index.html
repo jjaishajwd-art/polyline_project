@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PolyEdit — Advanced Polyline Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── NAVBAR ──────────────────────────────────────────── -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="logo-icon">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="6" cy="26" r="4" fill="#00d4ff"/>
+          <circle cx="16" cy="8"  r="4" fill="#00d4ff"/>
+          <circle cx="28" cy="20" r="4" fill="#00d4ff"/>
+          <line x1="6" y1="26" x2="16" y2="8"  stroke="#00d4ff" stroke-width="2" stroke-dasharray="3 2"/>
+          <line x1="16" y1="8"  x2="28" y2="20" stroke="#00d4ff" stroke-width="2" stroke-dasharray="3 2"/>
+        </svg>
+      </div>
+      <span class="logo-text">Poly<span class="logo-accent">Edit</span></span>
+      <span class="logo-badge">v2.0</span>
+    </div>
+
+    <!-- Tool buttons -->
+    <div class="nav-tools">
+      <button class="tool-btn active" id="drawBtn" data-mode="draw" title="Draw [B]">
+        <svg viewBox="0 0 20 20"><path d="M3 17l2-6L14 2l4 4L9 15l-6 2z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"/><path d="M14 2l4 4" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span>Draw</span>
+        <kbd>B</kbd>
+      </button>
+      <button class="tool-btn" id="moveBtn" data-mode="move" title="Move [M]">
+        <svg viewBox="0 0 20 20"><path d="M10 2v16M2 10h16M10 2L7 5M10 2l3 3M10 18l-3-3M10 18l3-3M2 10l3-3M2 10l3 3M18 10l-3-3M18 10l-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Move</span>
+        <kbd>M</kbd>
+      </button>
+      <button class="tool-btn" id="deleteBtn" data-mode="delete" title="Delete [D]">
+        <svg viewBox="0 0 20 20"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Delete</span>
+        <kbd>D</kbd>
+      </button>
+      <button class="tool-btn" id="insertBtn" data-mode="insert" title="Insert Point">
+        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="3" fill="currentColor"/><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span>Insert</span>
+      </button>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- Actions -->
+    <div class="nav-actions">
+      <button class="action-btn" id="newLineBtn" title="New Polyline [B]">
+        <svg viewBox="0 0 20 20"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        New Line
+      </button>
+      <button class="action-btn" id="refreshBtn" title="Refresh [R]">
+        <svg viewBox="0 0 20 20"><path d="M4 10a6 6 0 0 1 10.5-4M16 10a6 6 0 0 1-10.5 4M14 6l2.5-2.5L14 1M6 14l-2.5 2.5L6 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Refresh
+      </button>
+      <button class="action-btn" id="undoBtn" title="Undo [Ctrl+Z]">
+        <svg viewBox="0 0 20 20"><path d="M4 9H14a4 4 0 0 1 0 8H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M8 5L4 9l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Undo
+      </button>
+      <button class="action-btn" id="redoBtn" title="Redo [Ctrl+Y]">
+        <svg viewBox="0 0 20 20"><path d="M16 9H6a4 4 0 0 0 0 8h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 5l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Redo
+      </button>
+    </div>
+
+    <div class="nav-divider"></div>
+
+    <!-- Save/Export -->
+    <div class="nav-save">
+      <button class="save-btn" id="saveJsonBtn">
+        <svg viewBox="0 0 20 20"><path d="M4 4h8l4 4v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="7" y="13" width="6" height="4" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="7" y="4" width="5" height="3" rx="0.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+        Save JSON
+      </button>
+      <button class="save-btn primary" id="saveImgBtn">
+        <svg viewBox="0 0 20 20"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="7.5" cy="7.5" r="1.5" fill="currentColor"/><path d="M3 13l4-4 3 3 2-2 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        Export PNG
+      </button>
+      <button class="save-btn" id="loadBtn">
+        <svg viewBox="0 0 20 20"><path d="M3 12v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3M10 3v10M7 10l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Load
+      </button>
+    </div>
+    <input type="file" id="fileInput" accept=".json" style="display:none"/>
+  </nav>
+
+  <!-- ── MAIN LAYOUT ──────────────────────────────────────── -->
+  <div class="app-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-header">
+          <span>Polylines</span>
+          <span class="count-badge" id="lineCount">1 / 100</span>
+        </div>
+        <div class="polyline-list" id="polylineList"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-header">Line Style</div>
+        <div class="style-controls">
+          <label class="ctrl-label">Color</label>
+          <div class="color-row">
+            <input type="color" id="colorPicker" value="#00d4ff" class="color-picker"/>
+            <div class="color-presets">
+              <div class="preset" style="background:#00d4ff" data-color="#00d4ff"></div>
+              <div class="preset" style="background:#a3e635" data-color="#a3e635"></div>
+              <div class="preset" style="background:#f97316" data-color="#f97316"></div>
+              <div class="preset" style="background:#e879f9" data-color="#e879f9"></div>
+              <div class="preset" style="background:#fb7185" data-color="#fb7185"></div>
+              <div class="preset" style="background:#facc15" data-color="#facc15"></div>
+            </div>
+          </div>
+          <label class="ctrl-label">Width <span id="widthVal">2px</span></label>
+          <input type="range" id="lineWidth" min="1" max="10" value="2" class="range-slider"/>
+          <label class="ctrl-label">Point Size <span id="ptSizeVal">5px</span></label>
+          <input type="range" id="pointSize" min="3" max="12" value="5" class="range-slider"/>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-header">Canvas</div>
+        <div class="style-controls">
+          <label class="toggle-row">
+            <span>Show Grid</span>
+            <label class="toggle"><input type="checkbox" id="gridToggle"/><span class="slider"></span></label>
+          </label>
+          <label class="toggle-row">
+            <span>Snap to Grid</span>
+            <label class="toggle"><input type="checkbox" id="snapToggle"/><span class="slider"></span></label>
+          </label>
+          <label class="toggle-row">
+            <span>Close Shape</span>
+            <label class="toggle"><input type="checkbox" id="closeToggle"/><span class="slider"></span></label>
+          </label>
+          <label class="ctrl-label">Grid Size <span id="gridSizeVal">20px</span></label>
+          <input type="range" id="gridSize" min="10" max="60" value="20" class="range-slider"/>
+        </div>
+      </div>
+
+      <div class="sidebar-section shortcuts">
+        <div class="sidebar-header">Shortcuts</div>
+        <div class="shortcut-list">
+          <div class="shortcut"><kbd>B</kbd><span>New / Begin</span></div>
+          <div class="shortcut"><kbd>M</kbd><span>Move mode</span></div>
+          <div class="shortcut"><kbd>D</kbd><span>Delete mode</span></div>
+          <div class="shortcut"><kbd>R</kbd><span>Refresh</span></div>
+          <div class="shortcut"><kbd>Q</kbd><span>Quit / Clear</span></div>
+          <div class="shortcut"><kbd>Ctrl+Z</kbd><span>Undo</span></div>
+          <div class="shortcut"><kbd>Ctrl+Y</kbd><span>Redo</span></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Canvas Area -->
+    <main class="canvas-wrapper">
+      <canvas id="canvas"></canvas>
+      <!-- Hover tooltip -->
+      <div class="canvas-tooltip" id="tooltip"></div>
+    </main>
+
+  </div>
+
+  <!-- ── STATUS BAR ───────────────────────────────────────── -->
+  <footer class="statusbar">
+    <div class="status-left">
+      <div class="status-mode" id="statusMode">
+        <span class="dot draw"></span> Mode: <strong>Draw</strong>
+      </div>
+      <div class="status-sep">|</div>
+      <div id="statusCoords">X: — &nbsp; Y: —</div>
+      <div class="status-sep">|</div>
+      <div id="statusPoints">Points: 0</div>
+    </div>
+    <div class="status-right">
+      <div id="statusMsg" class="status-msg">Ready — click canvas to draw points</div>
+    </div>
+  </footer>
+
+  <!-- Toast notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
